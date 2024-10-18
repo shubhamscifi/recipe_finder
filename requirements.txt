@@ -1,0 +1,11 @@
+# python 3.10
+pandas
+numpy
+pyarrow
+requests
+chromadb
+sentence-transformers
+torch
+fastapi
+jupyter
+ipykernel

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recipe Finder</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+        }
+        .recipe-card {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            padding: 20px;
+        }
+        .recipe-name {
+            color: #2980b9;
+            margin-top: 0;
+        }
+        .recipe-image {
+            max-width: 200px;
+            height: auto;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        .recipe-details {
+            margin-bottom: 10px;
+        }
+        .recipe-description {
+            font-style: italic;
+            color: #7f8c8d;
+        }
+        .loading {
+            text-align: center;
+            font-size: 18px;
+            margin-top: 20px;
+        }
+        .form-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .form-input {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+        .form-button {
+            padding: 10px 20px;
+            background-color: #2980b9;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Recipe Finder</h1>
+    <div class="form-container">
+        <input type="text" id="query" class="form-input" placeholder="Enter your query">
+        <button id="search-button" class="form-button">Search</button>
+    </div>
+    <div id="recipes-container"></div>
+
+    <script>
+        const apiUrl = 'http://127.0.0.1:8080/get-recipe';
+        const recipesContainer = document.getElementById('recipes-container');
+        const searchButton = document.getElementById('search-button');
+        const queryInput = document.getElementById('query');
+
+        searchButton.addEventListener('click', fetchRecipes);
+
+        async function fetchRecipes() {
+            const query = queryInput.value;
+            recipesContainer.innerHTML = '<p class="loading">Loading recipes...</p>';
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ query: query })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const data = await response.json();
+                displayRecipes(data);
+            } catch (error) {
+                console.error('Error:', error);
+                recipesContainer.innerHTML = '<p>Error loading recipes. Please try again later.</p>';
+            }
+        }
+
+        function displayRecipes(recipes) {
+            recipesContainer.innerHTML = '';
+            recipes.forEach(recipe => {
+                const recipeCard = `
+                    <div class="recipe-card">
+                        <h2 class="recipe-name">${recipe.name}</h2>
+                        <img src="${recipe.image_url}" alt="${recipe.name}" class="recipe-image">
+                        <p class="recipe-description">${recipe.description}</p>
+                        <div class="recipe-details">
+                            <p><strong>Cuisine:</strong> ${recipe.cuisine.join(', ')}</p>
+                            <p><strong>Diet:</strong> ${recipe.diet.join(', ')}</p>
+                            <p><strong>Meal Type:</strong> ${recipe.meal_type.join(', ')}</p>
+                            <p><strong>Cooking Time:</strong> ${recipe.cooking_time} minutes</p>
+                            <p><strong>Prep Time:</strong> ${recipe.prep_time} minutes</p>
+                            <p><strong>Categories:</strong> ${recipe.category_names.join(', ')}</p>
+                            <p><strong>Ingredients:</strong> ${recipe.ingredients_names.join(', ')}</p>
+                            <p><strong>Score:</strong> ${recipe.score}</p>
+                        </div>
+                    </div>
+                `;
+                recipesContainer.innerHTML += recipeCard;
+            });
+        }
+    </script>
+</body>
+</html>
