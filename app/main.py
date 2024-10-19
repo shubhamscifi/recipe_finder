@@ -7,6 +7,14 @@ import torch
 import chromadb
 import pandas as pd
 import json
+import logging
+
+# logging.basicConfig(filename='filename.log', 
+#                     level=logging.DEBUG, 
+#                     format='%(asctime)s:%(levelname)s:%(message)s')
+logger = logging.getLogger()  # __name__
+logger.setLevel(logging.INFO)
+logger.info('Starting application')
 
 app = FastAPI()
 
@@ -22,9 +30,12 @@ retrieval_model = SentenceTransformer(model_name_or_path=constants.retrieval_mod
                                     #   cache_folder=constants.retrieval_model_cache_path,
                                       device=constants.device)
 
+logger.info('retrieval_model success')
+
 reranker_model = CrossEncoder(model_name=constants.reranker_model_id,
                               default_activation_function=torch.nn.Sigmoid(),
                               device=constants.device)
+logger.info('reranker_model success')
 
 chroma_client = chromadb.PersistentClient(path=constants.vector_db_path)
 # switch `create_collection` to `get_or_create_collection` to avoid creating a new collection every time
@@ -32,13 +43,15 @@ collection = chroma_client.get_or_create_collection(
     name=constants.recipe_collection, 
     metadata={"hnsw:space": "cosine"}   # use cosine similarity
     )
+logger.info('chroma client success')
 
 recipe_df = pd.read_parquet(constants.recipe_file)
+logger.info('recipe data success')
 
 
 @app.post("/get-recipe")
 async def get_recipe(query:str = Body(embed=True)):
-
+    logger.info("calling recipe api")
     query_embeddings: list[list[float]] = retrieval_model.encode([query])
     # retrieve to 50 recipes
     results = collection.query(
@@ -73,6 +86,13 @@ async def get_recipe(query:str = Body(embed=True)):
     return json.loads(top_recipe_ranked_df.to_json(orient='records'))
 
 
-@app.get("/get-recipe-data")
+@app.get("/")
 async def get_recipe_html():
+    logger.info('Rendering html page')
     return FileResponse("./app/response.html")
+
+
+@app.get("/healthcheck")
+async def healthcheck():
+    logger.info("calling healthcheck")
+    return "OK"
