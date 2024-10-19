@@ -19,7 +19,7 @@ app.add_middleware(
 )
 
 retrieval_model = SentenceTransformer(model_name_or_path=constants.retrieval_model_id, 
-                                      cache_folder=constants.retrieval_model_cache_path,
+                                    #   cache_folder=constants.retrieval_model_cache_path,
                                       device=constants.device)
 
 reranker_model = CrossEncoder(model_name=constants.reranker_model_id,
