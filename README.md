@@ -1,3 +1,13 @@
+---
+title: Hf Test
+emoji: 👁
+colorFrom: red
+colorTo: blue
+sdk: docker
+pinned: false
+short_description: Testing hf spaces
+---
+
 # Recipe Finder
 <img src="image.png" alt="Alt text" width="400"/>
 <!-- ![Alt text](image.png) -->
