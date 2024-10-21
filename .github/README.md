@@ -1,3 +1,4 @@
+Try now: https://me-shubham-hf-test.hf.space/
 # Recipe Finder
 <img src="../image.png" alt="Alt text" width="400"/>
 <!-- ![Alt text](image.png) -->
@@ -36,3 +37,11 @@ Scope of Improvement:
 -
 - Spelling mistakes in query might result not getting relevant results.
 - This solution might not work well for hindi or Hinglish text, because the model used was trained on English language data.
+
+
+<iframe
+	src="https://me-shubham-hf-test.hf.space"
+	frameborder="0"
+	width="850"
+	height="450"
+></iframe>
